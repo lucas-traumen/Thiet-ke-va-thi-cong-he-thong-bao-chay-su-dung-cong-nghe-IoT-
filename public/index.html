@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Bảng điều khiển hệ thống cảnh báo cháy</title>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>🔥 Bảng điều khiển hệ thống cảnh báo cháy</h1>
+  <div id="connection-status">⏳ Đã khởi tạo</div>
+
+  <div id="book-container">
+    <div id="page-dashboard" class="page">
+      <div id="dashboard-wrap">
+        <div id="single-device-placeholder"></div>
+      </div>
+    </div>
+
+    <div id="page-charts" class="page">
+      <button id="btn-back-to-dash">⬅ Quay lại Dashboard</button>
+      <h2 id="charts-title">📈 Biểu đồ dữ liệu</h2>
+
+      <div class="chart-wrapper">
+        <h3>Nhiệt độ</h3>
+        <div class="chart-container"><canvas id="chart-temp"></canvas></div>
+      </div>
+
+      <div class="chart-wrapper">
+        <h3>Độ ẩm</h3>
+        <div class="chart-container"><canvas id="chart-hum"></canvas></div>
+      </div>
+
+      <div class="chart-wrapper">
+        <h3>Gas</h3>
+        <div class="chart-container"><canvas id="chart-smoke"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <template id="device-template">
+    <div class="device-card" role="region" aria-label="Device card">
+      <div class="device-header">
+        <h3 class="device-id">--</h3>
+        <span class="device-status offline">offline</span>
+      </div>
+
+      <div class="telemetry">
+        <p>🌡️ Nhiệt độ: <strong><span class="data-temp">--</span> °C</strong></p>
+        <p>💧 Độ ẩm: <strong><span class="data-hum">--</span> %</strong></p>
+        <p>💨 Gas: <strong><span class="data-smoke">--</span> ppm</strong></p>
+        <p>⚙️ ROR: <strong><span class="data-ror">--</span> °C/phút</strong></p>
+        <p>🔥 Báo động: <strong><span class="data-alarm">--</span></strong></p>
+      </div>
+
+      <div class="controls">
+        <h4>Điều khiển</h4>
+        
+        <div class="btn-row">
+          <button class="btn btn-alarm-clear">Xóa Báo Động</button>
+        </div>
+        
+        <div class="btn-row">
+          <button class="btn btn-led-on" data-cmd="led" data-val="on">Bật LED</button>
+          <button class="btn btn-led-off" data-cmd="led" data-val="off">Tắt LED</button>
+          <button class="btn btn-led-auto" data-cmd="mode_auto" data-val="auto">LED Auto</button>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-buzzer-unmute" data-cmd="buzzer" data-val="on">Bật Còi</button>
+          <button class="btn btn-buzzer-mute" data-cmd="buzzer" data-val="off">Tắt Còi</button>
+        </div>
+
+        <div style="margin-top:12px;">
+          <button class="btn btn-charts">📈 Xem Biểu Đồ</button>
+          <button class="btn btn-history">📜 Xem Lịch Sử</button>
+        </div>
+
+        <div class="ack-message" aria-live="polite"></div>
+      </div>
+      </div>
+  </template>
+
+  <div id="history-modal">
+  <div id="history-box">
+    <button id="close-history">Đóng</button>
+    <h3 id="history-title">Lịch sử</h3>
+    <div id="history-content"></div>
+    <button id="load-more-history" style="display:none; margin-top:10px;">Tải thêm</button>
+  </div>
+</div>
+
+  <script src="app.js"></script>
+</body>
+</html>
